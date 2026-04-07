@@ -1,0 +1,145 @@
+/* NAV BAR */
+/* Start of the Dashboard */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+
+.panel {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+#tankWater {
+    transition: height 0.6s ease, y 0.6s ease;
+}
+
+.schematic-svg-wrapper {
+    isolation: isolate;
+    transform: none !important;
+    overflow: visible !important;
+    will-change: auto !important;
+}
+
+.panel h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.data {
+    display: flex;
+    flex-direction: ;
+}
+
+.schematic {
+    position: relative;
+    display: inline-block;
+
+    /* display: flex; */
+    justify-content: left;
+    align-items: center;
+    width: 300px;
+    height: 150px;
+    padding: 10px;
+}
+
+.tank {
+    position: relative;
+    height: 120px;
+    width: 70px;
+    background: lightblue;
+
+    /* tank body stays light blue */
+    border-radius: 25px 25px 0 0;
+    overflow: hidden;
+    border: 1px solid brown;
+}
+
+.tank-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 0%;
+    background: lightblue;
+    transition: height 0.5s ease;
+}
+
+.inlet-pipe {
+    width: 60px;
+
+    /* pipe length */
+    height: 10px;
+
+    /* pipe thickness */
+    background: #444;
+
+    /* or your pipe graphic */
+    border-radius: 0px;
+    overflow: hidden;
+    margin: 10px 0;
+    position: absolute;
+    left: 80px;
+    top: 25%;
+}
+
+.inlet-pipe .pipe-fill {
+    height: 100%;
+    width: 0%;
+
+    /* start empty */
+    background: #00aaff;
+
+    /* will be replaced by tempToColor() */
+    transition: width 0.4s ease;
+}
+
+.outlet-pipe {
+    position: absolute;
+    bottom: 25%;
+    left: 78px;
+    margin-left: 1px;
+    height: 10px;
+    width: 60px;
+    background: blueviolet;
+}
+
+#temp-tank {
+    display: inline-block;
+    width: 130px;
+
+    /* enough for "100 °C" */
+    text-align: left;
+}
+
+.temp-value {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.temp-status {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.pipe-status {
+    font-size: 0.9rem;
+    color: #777;
+}
+}
+

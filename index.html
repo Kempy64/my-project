@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Home Automation Dashboard</title>
+        <!-- Bootstrap -->
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+        <!-- Your CSS -->
+        <link href="style.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- ========================= -->
+        <!-- TANK TEMPERATURE -->
+        <!-- ========================= -->
+        <section id="tank-sensors" class="dashboard">
+            <div class="panel">
+                <h2>Tank Water Temperature</h2>
+                <div class="panel-content">
+                    <div class="data">
+                        <!-- FIXED: temp-tank now only contains the number -->
+                        <div class="temp-value">
+                            <span id="temp-tank">22 °C</span>
+                            <div class="temp-status">Tank Temp...</div>
+                            <span id="temp-pipe">60 °C</span>
+                            <div class="pipe-status">Inlet Pipe Temp...</div>
+                        </div>
+                        <!-- FIXED: schematic div no longer overwritten -->
+                        <div class="schematic">
+                            <div class="tank">
+                                <div class="tank-fill" id="tank-fill"></div>
+                            </div>
+                            <div class="inlet-pipe">
+                                <div class="pipe-fill" id="inlet-fill"></div>
+                            </div>                             
+                            <div class="outlet-pipe">
+                                <div class="pipe-fill" id="outlet-fill"></div>                                 
+                            </div>                             
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- ========================= -->
+        <!-- JAVASCRIPT -->
+        <!-- ========================= -->
+        <!-- Tank Temperature SSE -->
+        <script>
+	
+// ===============================
+// TANK TEMPERATURE SSE
+// ===============================
+
+            
+ function updateTankLevel(levelPercent) {
+    const tank = document.getElementById("tankWater");
+
+    const maxHeight = 150;   // tank interior height
+    const minY = 55;         // top of tank
+    const maxY = 205;        // bottom of tank
+
+    const height = (levelPercent / 100) * maxHeight;
+    const y = maxY - height;
+
+    tank.setAttribute("height", height);
+    tank.setAttribute("y", y);
+}           
+            
+            
+            
+// Create SSE connection for Tank
+const tankTemp = new EventSource("/temp-tank");
+
+tankTemp.onmessage = function(event) {
+    const tempC = parseFloat(event.data);
+
+    document.getElementById("temp-tank").textContent =
+        tempC.toFixed(1) + " °C";
+
+    const percent = Math.min(Math.max((tempC / 50) * 100, 0), 100);
+    updateTank(percent);
+};
+
+// Update tank fill + colour
+function updateTank(percent) {
+    const fill = document.getElementById("tank-fill");
+
+    fill.style.height = percent + "%";
+
+    const temp = (percent / 100) * 50;
+    fill.style.background = tempToColor(temp);
+}
+
+// ===============================
+// PIPE TEMPERATURE SSE
+// ===============================
+
+const pipeTemp = new EventSource("/temp-pipe");
+
+pipeTemp.onmessage = function(event) {
+    const tempPipe = parseFloat(event.data);
+
+    document.getElementById("temp-pipe").textContent =
+        tempPipe.toFixed(1) + " °C";
+
+    updateInletPipe(tempPipe);
+};
+
+function updateInletPipe(temp) {
+    const fill = document.getElementById("inlet-fill");
+
+    const percent = Math.min(Math.max((temp / 80) * 100, 0), 100);
+
+    fill.style.width = percent + "%";
+    fill.style.background = tempToColor(temp);
+}
+
+// ===============================
+// COLOUR MAPPING
+// ===============================
+
+function tempToColor(temp) {
+    const t = Math.min(Math.max(temp, 0), 100);
+
+    if (t < 10) return "#0077ff";      // cold blue
+    if (t < 20) return "#00cc66";      // cool green
+    if (t < 35) return "#ffcc00";      // warm yellow
+    return "#ff3300";                  // hot red
+}
+
+// ===============================
+// TEST MODE
+// ===============================
+
+ const evtSource = new EventSource("/stream");
+
+evtSource.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    if (data.tankLevel !== undefined) {
+        updateTankLevel(data.tankLevel);
+    }
+};           
+            
+            
+setInterval(() => {
+    const fakeTemp = parseFloat((Math.random() * 50).toFixed(1));
+    document.getElementById("temp-tank").textContent = fakeTemp + " °C";
+    updateTank((fakeTemp / 100) * 100);
+}, 5000);
+
+setInterval(() => {
+    const fakePipe = parseFloat((Math.random() * 80).toFixed(1));
+    document.getElementById("temp-pipe").textContent = fakePipe + " °C";
+    updateInletPipe(fakePipe);
+}, 5000);
+</script>
+    </body>
+</html>
